@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<title>گردونه تیم سیاه / سفید</title>
+<style>
+body {
+    font-family: sans-serif;
+    text-align: center;
+    margin-top: 40px;
+}
+
+#wheelContainer {
+    position: relative;
+    width: 420px;
+    height: 420px;
+    margin: auto;
+}
+
+#wheel {
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    border: 10px solid #444;
+    background: conic-gradient(
+        white 0deg 180deg,
+        black 180deg 360deg
+    );
+    transition: transform 4s cubic-bezier(.17,.67,.12,1.02);
+}
+
+#pointer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; 
+    height: 0; 
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 30px solid red;
+}
+
+button {
+    margin-top: 25px;
+    padding: 12px 30px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+#remaining, #resultList {
+    margin-top: 25px;
+    font-size: 20px;
+}
+</style>
+</head>
+<body>
+
+<h2>گردونه تعیین تیم (سیاه یا سفید)</h2>
+
+<div id="remaining"></div>
+
+<div id="wheelContainer">
+    <div id="pointer"></div>
+    <div id="wheel"></div>
+</div>
+
+<button onclick="spin()">چرخاندن گردونه</button>
+
+<h3>نتایج:</h3>
+<div id="resultList"></div>
+
+<script>
+let players = [
+  "علیرضا صبورا","محمد صبورا"," عشوری","دانیال","رامتین","نادر",
+  "پویا","علی احمدی","ایلیا","سینا","پژمان","داماد صبورا"
+];
+
+let assigned = {};
+let currentPlayer = 0;
+let spinning = false;
+
+function updateRemaining() {
+  if (currentPlayer < players.length) {
+    document.getElementById("remaining").innerHTML =
+      "نوبت: " + players[currentPlayer];
+  } else {
+    document.getElementById("remaining").innerHTML =
+      "همه بازیکنان انتخاب شدند!";
+  }
+}
+
+updateRemaining();
+
+function spin() {
+  if (spinning) return; // جلوگیری از چرخش دوباره وسط کار
+  if (currentPlayer >= players.length) {
+    alert("پایان کار!");
+    return;
+  }
+
+  spinning = true;
+
+  // زاویه تصادفی بین 2000 تا 3000 درجه برای چرخش واقعی
+  let randomAngle = 2000 + Math.random() * 1000;
+
+  document.getElementById("wheel").style.transform =
+        "rotate(" + randomAngle + "deg)";
+
+  setTimeout(() => {
+    // نتیجه نهایی
+    let finalAngle = randomAngle % 360;
+    let result = finalAngle < 180 ? "سفید" : "سیاه";
+
+    let name = players[currentPlayer];
+    assigned[name] = result;
+
+    updateResults();
+
+    currentPlayer++;
+    updateRemaining();
+
+    spinning = false;
+
+  }, 4000); // مدت زمان برابر با transition
+}
+
+function updateResults() {
+  let txt = "";
+  for (let p in assigned) {
+    txt += p + " ➜ " + assigned[p] + "<br>";
+  }
+  document.getElementById("resultList").innerHTML = txt;
+}
+</script>
+
+</body>
+</html>
